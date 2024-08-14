@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { AppModule } from './app.module';
-import { ConfigEnum } from './config';
+import { ConfigEnum } from './common/config';
 
 const validationPipe = new ValidationPipe({
   whitelist: true,
