@@ -8,6 +8,15 @@ export class MailController {
 
   @EventPattern('send-email')
   async sendEmail(@Payload() payload: any) {
-    console.log('send-email', payload);
+    try {
+      await this.mailService.sendEmail(
+        'developers@munyaal.app',
+        'Hello World - Subject',
+        'Hello World - Content',
+      );
+      console.log('send-email', payload);
+    } catch (error) {
+      console.error(error);
+    }
   }
 }
