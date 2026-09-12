@@ -1,22 +1,14 @@
 import { Controller } from '@nestjs/common';
-import { MailService } from './mail.service';
 import { EventPattern, Payload } from '@nestjs/microservices';
+import { SendEmailPayload } from './dto';
+import { MailService } from './mail.service';
 
 @Controller()
 export class MailController {
   constructor(private readonly mailService: MailService) {}
 
-  @EventPattern('send-email')
-  async sendEmail(@Payload() payload: any) {
-    try {
-      await this.mailService.sendEmail(
-        'developers@munyaal.app',
-        'Hello World - Subject',
-        'Hello World - Content',
-      );
-      console.log('send-email', payload);
-    } catch (error) {
-      console.error(error);
-    }
+  @EventPattern('send.one.email')
+  async sendEmail(@Payload() payload: SendEmailPayload) {
+    await this.mailService.awsMailSend(payload);
   }
 }

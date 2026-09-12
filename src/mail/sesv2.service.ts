@@ -1,8 +1,10 @@
 import { SESv2 } from '@aws-sdk/client-sesv2';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ConfigEnum } from './../common/config';
+import { ConfigEnum } from '../common/config';
 
-export class SESv2Config {
+@Injectable()
+export class SESv2Service {
   private readonly _sesv2Client: SESv2;
   private readonly _identityName: string;
 
@@ -22,11 +24,11 @@ export class SESv2Config {
     this._identityName = this._config.get<string>(ConfigEnum.IDENTITY_NAME);
   }
 
-  getClient(): SESv2 {
+  get client(): SESv2 {
     return this._sesv2Client;
   }
 
-  getIdentityName(): string {
+  get identityName(): string {
     return this._identityName;
   }
 }
