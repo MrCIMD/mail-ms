@@ -17,14 +17,19 @@ async function bootstrap() {
 
   const configService = context.get(ConfigService);
 
-  const natsServers = configService.get<string[]>(ConfigEnum.NATS_SERVERS);
+  const amqpUrls = configService.get<string[]>(ConfigEnum.AMQP_SERVERS);
 
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
     AppModule,
     {
-      transport: Transport.NATS,
+      transport: Transport.RMQ,
       options: {
-        servers: natsServers,
+        urls: amqpUrls,
+        queue: 'mailing_queue',
+        queueOptions: {
+          durable: true,
+        },
+        noAck: false,
       },
     },
   );
