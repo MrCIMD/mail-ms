@@ -1,23 +1,11 @@
-# Esta es una imagen de node.js
-FROM node:alpine3.20
+FROM node:24.21.0-trixie-slim AS development
 
-# Establece el directorio de trabajo
-WORKDIR /usr/src/app
+RUN corepack enable && corepack prepare pnpm@11.1.1 --activate
 
-# Copia package.json y package-lock.json al directorio de trabajo
-COPY package*.json .
+WORKDIR /usr/app
 
-# Instala las dependencias
-RUN npm install
-
-# Copia el resto de la aplicación al directorio de trabajo
 COPY . .
 
-# Establece la variable de entorno NODE_ENV a development
-ENV NODE_ENV=development
+RUN pnpm install
 
-# Expone el puerto de la aplicación
-# EXPOSE 4500
-
-# Comando para iniciar la aplicación
-# CMD ["npm", "run", "start:dev"]
+# Mail-ms es un microservicio RabbitMQ y no expone puerto HTTP.

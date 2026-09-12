@@ -1,0 +1,49 @@
+# Dependencies
+
+# 1. Pull the official Node.js image
+FROM node:24.21.0-trixie-slim AS deps
+# 2. Set the working directory
+WORKDIR /usr/app
+# 3. Copy package.json and pnpm-lock.yaml to the working directory
+COPY package.json pnpm-lock.yaml ./
+# 4. Install corepack and enable it
+RUN corepack enable && corepack prepare pnpm@11.1.1 --activate
+# 5. Install the dependencies
+RUN pnpm install --ignore-scripts
+# 6. Rebuild native deps
+RUN pnpm rebuild
+
+# Build
+
+# 1. Pull the official Node.js image
+FROM node:24.21.0-trixie-slim AS builder
+# 2. Set the working directory
+WORKDIR /usr/app
+# 3. Copy npm dependencies from the deps stage
+COPY --from=deps /usr/app/node_modules ./node_modules
+# 4. Copy the rest of the application to the working directory
+COPY . .
+# 5. Install corepack and enable it
+RUN corepack enable && corepack prepare pnpm@11.1.1 --activate
+# 6. Build the application
+RUN pnpm run build
+# 7. Remove the development dependencies
+RUN pnpm prune --prod
+
+# Production image
+
+# 1. Pull the official Node.js image
+FROM node:24.21.0-trixie-slim AS prod
+# 2. Set the working directory
+WORKDIR /usr/app
+# 3. Copy npm dependencies from the build stage
+COPY --from=builder /usr/app/node_modules ./node_modules
+# 4. Copy the dist folder from the build stage
+COPY --from=builder /usr/app/dist ./dist
+# 5. Set the environment variable NODE_ENV to production
+ENV NODE_ENV=production
+# 6. Set the user to node
+USER node
+# 7. Mail-ms es un microservicio RabbitMQ: no expone puerto HTTP.
+# 8. Start the application
+CMD ["node", "dist/main.js"]
