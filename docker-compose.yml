@@ -5,9 +5,6 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
-    environment:
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:?Set RABBITMQ_USER in .env}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS:?Set RABBITMQ_PASS in .env}
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
     healthcheck:
@@ -25,7 +22,7 @@ services:
     env_file:
       - .env
     environment:
-      AMQP_SERVERS: amqp://${RABBITMQ_USER:?Set RABBITMQ_USER in .env}:${RABBITMQ_PASS:?Set RABBITMQ_PASS in .env}@rabbitmq:5672
+      AMQP_SERVERS: amqp://rabbitmq:5672
       TEMPLATE_DIR: /usr/app/templates
     volumes:
       - ./templates:/usr/app/templates:ro
